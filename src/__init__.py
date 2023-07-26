@@ -24,8 +24,9 @@ def write_config(config: Dict[str, str]):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, parent: QWidget):
+    def __init__(self, parent: QWidget, editor: Optional[Editor] = None):
         super().__init__(parent)
+        self.editor = editor
 
         self.setWindowTitle("Setup Color Coding Options")
         self.vbox = QVBoxLayout()
@@ -53,15 +54,19 @@ class MainWindow(QMainWindow):
 
     def the_button_was_clicked(self):
         plain_text = self.text.toPlainText()
-        write_config(json.loads(plain_text))
+        config = json.loads(plain_text)
+        write_config(config)
+        if self.editor:
+            self.editor.web.eval("ColorCodingSetConfig(%s)" % json.dumps(config))
+
         self.close()
 
     def cancel_btn_clicked(self):
         self.close()
 
 
-def show_config(parent: Optional[QWidget] = None):
-    widget = MainWindow(parent or mw)
+def show_config(parent: Optional[QWidget] = None, editor: Optional[Editor] = None):
+    widget = MainWindow(parent or mw, editor)
     widget.show()
 
 
@@ -70,7 +75,7 @@ def add_editor_button(buttons: List[str], editor: Editor) -> None:
     btn = editor.addButton(
         icon_path,
         "color_coding",
-        lambda e: show_config(e.widget),
+        lambda e: show_config(e.widget, e),
         tip="ColorCoding config",
         label="ColorCoding",
         rightside=False,
@@ -80,7 +85,9 @@ def add_editor_button(buttons: List[str], editor: Editor) -> None:
 
 def on_editor_did_load_note(editor: Editor) -> None:
     config = read_config()
-    editor.web.eval("ColorCodingSetup(%s);" % json.dumps(config))
+    editor.web.eval(
+        "ColorCodingSetConfig(%s); ColorCodingSetup();" % json.dumps(config)
+    )
 
 
 web_base = f"/_addons/{mw.addonManager.addonFromModule(__name__)}/web"

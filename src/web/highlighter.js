@@ -1,17 +1,21 @@
-function _ColorCodingSetKeyHandler(config, editable) {
+function _ColorCodingSetKeyHandler(editable) {
     editable.addEventListener("keyup", (e) => {
         if (e.which == 32) {
-            ColorCodingHighlight(config, editable);
+            ColorCodingHighlight(editable);
         }
     });
 }
 
-async function ColorCodingSetup(config) {
+function ColorCodingSetConfig(config) {
+    globalThis.colorCodingConfig = config;
+}
+
+async function ColorCodingSetup() {
     if (document.getElementById("fields")) {
         [...document.getElementById("fields").children].forEach((field) => {
             const editable = field.editingArea.editable;
-            _ColorCodingSetKeyHandler(config, editable);
-            ColorCodingHighlight(config, editable);
+            _ColorCodingSetKeyHandler(editable);
+            ColorCodingHighlight(editable);
         });
     } else {
         const NoteEditor = require("anki/NoteEditor");
@@ -24,15 +28,15 @@ async function ColorCodingSetup(config) {
                 field.editingArea.editingInputs
             )[0];
             const editable = await richText.element;
-            _ColorCodingSetKeyHandler(config, editable);
-            ColorCodingHighlight(config, editable);
+            _ColorCodingSetKeyHandler(editable);
+            ColorCodingHighlight(editable);
         });
     }
 }
 
-function ColorCodingHighlight(config, editable) {
+function ColorCodingHighlight(editable) {
     const instance = new Mark(editable);
-    for (const [word, color] of Object.entries(config)) {
+    for (const [word, color] of Object.entries(globalThis.colorCodingConfig)) {
         instance.markRegExp(new RegExp(word, "g"), {
             element: "span",
             className: "",
