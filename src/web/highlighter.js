@@ -38,7 +38,15 @@ function ColorCodingHighlight(config, editable) {
             className: "",
             acrossElements: true,
             each: (e) => {
-                e.style.color = color;
+                if (color === "bold") {
+                    e.style.fontWeight = "bold";
+                } else if (color === "italic") {
+                    e.style.fontStyle = "italic";
+                } else if (color === "underline") {
+                    e.style.textDecoration = "underline";
+                } else {
+                    e.style.color = color;
+                }
             },
             filter: (e) => {
                 if (e.parentNode.dataset && e.parentNode.dataset.markjs) {
