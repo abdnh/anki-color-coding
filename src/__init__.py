@@ -54,9 +54,6 @@ class MainWindow(QMainWindow):
         plain_text = self.text.toPlainText()
         write_json(json.loads(plain_text))
         self.close()
-        #for editor in editors:
-            #sendNewWords(editor)
-            #loadJSFile(editor)
 
     def cancel_btn_clicked(self):
         self.close()
@@ -134,17 +131,5 @@ action2 = QAction("Color Coding...", mw)
 qconnect(action2.triggered, color_setup_gui)
 mw.form.menuTools.addAction(action2)
 
-
-
-editors = []
-def add_to_editors(editor)->None:
-    editor = editor.web
-    editors.append(editor)
-
 gui_hooks.editor_did_init_buttons.append(setupButtons)
 gui_hooks.editor_did_init.append(setupLiveChanger)
-gui_hooks.editor_did_init.append(add_to_editors)
-
-
-
-
