@@ -36,20 +36,24 @@ async function ColorCodingSetup() {
 
 function ColorCodingHighlight(editable) {
     const instance = new Mark(editable);
-    for (const [word, color] of Object.entries(globalThis.colorCodingConfig)) {
+    for (const [word, properties] of Object.entries(
+        globalThis.colorCodingConfig
+    )) {
         instance.markRegExp(new RegExp(word, "g"), {
             element: "span",
             className: "",
             acrossElements: true,
             each: (e) => {
-                if (color === "bold") {
-                    e.style.fontWeight = "bold";
-                } else if (color === "italic") {
-                    e.style.fontStyle = "italic";
-                } else if (color === "underline") {
-                    e.style.textDecoration = "underline";
-                } else {
-                    e.style.color = color;
+                for (const property of properties.split(" ")) {
+                    if (property === "bold") {
+                        e.style.fontWeight = "bold";
+                    } else if (property === "italic") {
+                        e.style.fontStyle = "italic";
+                    } else if (property === "underline") {
+                        e.style.textDecoration = "underline";
+                    } else {
+                        e.style.color = property;
+                    }
                 }
             },
             filter: (e) => {
